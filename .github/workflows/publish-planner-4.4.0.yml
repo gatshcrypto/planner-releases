@@ -1,0 +1,31 @@
+name: Publish verified Planner 4.4.0
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.release/v4.4.0/**'
+      - '.github/workflows/publish-planner-4.4.0.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: planner-release-v4.4.0
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    if: github.repository == 'gatshcrypto/planner-releases' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out verified payload
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          persist-credentials: false
+      - name: Verify and publish the Windows update
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 .release/v4.4.0/publish.py
